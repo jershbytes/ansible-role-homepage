@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: 2026 Suguru Hirahara
+# SPDX-FileCopyrightText: 2026 spatterlight
+# SPDX-FileCopyrightText: 2026 Joshua Ross
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Verify homepage systemd service
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Wait for homepage service to become active (up to 180s)
+      ansible.builtin.systemd:
+        name: homepage.service
+      register: homepage_service
+      until: homepage_service.status.ActiveState == 'active'
+      retries: 36
+      delay: 5
+
+    - name: Assert homepage service is active
+      ansible.builtin.assert:
+        that: homepage_service.status.ActiveState == 'active'
+        fail_msg: "homepage.service not active ({{ homepage_service.status.ActiveState }})"
+        success_msg: "homepage.service is active"
+
+    - name: Retrieve homepage service log for debugging
+      when: homepage_debug_service_enabled | bool
+      ansible.builtin.command:
+        cmd: journalctl -xeu homepage.service
+      changed_when: false
+
+    - name: Wait for homepage HTTP endpoint to respond (up to 10m)
+      ansible.builtin.uri:
+        url: "http://localhost:3000/"
+        method: GET
+        status_code: [200, 302, 307]
+        follow_redirects: none
+      register: homepage_endpoint
+      until: homepage_endpoint.status in [200, 302, 307]
+      retries: 120
+      delay: 5
+
+    - name: Assert homepage HTTP endpoint responds
+      ansible.builtin.assert:
+        that: homepage_endpoint.status in [200, 302, 307]
+        fail_msg: "homepage did not respond as expected ({{ homepage_endpoint.status | default('no response') }})"
+        success_msg: "homepage responded with {{ homepage_endpoint.status }}"
+
+    - name: Show homepage systemd service status summary
+      ansible.builtin.debug:
+        msg:
+          - "homepage systemd: {{ homepage_service.status.ActiveState }}"
+          - "homepage HTTP: {{ homepage_endpoint.status }}"

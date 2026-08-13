@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-# Project source code URL: https://github.com/homepage-labs/homepage
+# Project source code URL: https://github.com/gethomepage/homepage
 
 homepage_enabled: true
 
@@ -16,8 +16,8 @@ homepage_identifier: homepage
 homepage_base_path: "/{{ homepage_identifier }}"
 homepage_data_path: "{{ homepage_base_path }}/data"
 
-# renovate: datasource=docker depName=ghcr.io/homepage-labs/homepage
-homepage_version: v1.74.0
+# renovate: datasource=docker depName=ghcr.io/gethomepage/homepage
+homepage_version: v1.13.2
 
 homepage_uid: ""
 homepage_gid: ""
@@ -40,15 +40,15 @@ homepage_hostname: ""
 # technical limitations.
 homepage_path_prefix: /
 
-homepage_container_image: "{{ homepage_container_image_registry_prefix }}homepage-labs/homepage:{{ homepage_container_image_tag }}"
+homepage_container_image: "{{ homepage_container_image_registry_prefix }}gethomepage/homepage:{{ homepage_container_image_tag }}"
 homepage_container_image_tag: "{{ homepage_version }}"
 homepage_container_image_registry_prefix: "{{ homepage_container_image_registry_prefix_upstream }}"
 homepage_container_image_registry_prefix_upstream: "{{ homepage_container_image_registry_prefix_upstream_default }}"
 homepage_container_image_registry_prefix_upstream_default: ghcr.io/
 
 homepage_container_image_self_build: false
-homepage_container_image_self_build_name: "homepage-labs/homepage:{{ homepage_container_image_self_build_repo_version }}"
-homepage_container_image_self_build_repo: "https://github.com/homepage-labs/homepage.git"
+homepage_container_image_self_build_name: "gethomepage/homepage{{ homepage_container_image_self_build_repo_version }}"
+homepage_container_image_self_build_repo: "https://github.com/gethomepage/homepage.git"
 homepage_container_image_self_build_repo_version: "{{ homepage_version if homepage_version != 'latest' else 'main' }}"
 homepage_container_image_self_build_src_files_path: "{{ homepage_base_path }}/docker-src"
 
@@ -64,7 +64,7 @@ homepage_container_network_deletion_enabled: true
 homepage_container_http_host_bind_port: ""
 
 # The port number in the container
-homepage_container_http_port: 7575
+homepage_container_http_port: 3000
 
 # A list of additional container networks that the container would be connected to.
 # The role does not create these networks, so make sure they already exist.

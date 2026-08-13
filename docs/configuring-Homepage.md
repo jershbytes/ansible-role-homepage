@@ -22,9 +22,9 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 This is an [Ansible](https://www.ansible.com/) role which installs [homepage](https://homepage.dev) to run as a [Docker](https://www.docker.com/) container wrapped in a systemd service.
 
-homepage is a highly customizable dashboard for managing your favorite applications and services with a drag-and-drop grid system. It also integrates with various self-hosted applications.
+homepage is a modern, fully static, fast, secure fully proxied, highly customizable application dashboard with integrations for over 100 services and translations into multiple languages. Easily configured via YAML files or through docker label discovery.
 
-See the project's [documentation](https://homepage.dev/docs/getting-started) to learn what homepage does and why it might be useful to you.
+See the project's [documentation](https://gethomepage.dev/configs/) to learn what homepage does and why it might be useful to you.
 
 ## Prerequisites
 
@@ -72,7 +72,7 @@ Take a look at:
 
 - [`defaults/main.yml`](../defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `homepage_environment_variables_additional_variables` variable
 
-See [the official documentation](https://homepage.dev/docs/advanced/environment-variables/) for a complete list of homepage's config options that you could put in `homepage_environment_variables_additional_variables`.
+See [the official documentation](https://gethomepage.dev/installation/docker/#using-environment-secrets) for a complete list of homepage's config options that you could put in `homepage_environment_variables_additional_variables`.
 
 ## Installing
 

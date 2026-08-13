@@ -1,0 +1,66 @@
+{#
+SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+{% if homepage_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if homepage_container_labels_traefik_docker_network %}
+traefik.docker.network={{ homepage_container_labels_traefik_docker_network }}
+{% endif %}
+
+{% set middlewares = [] %}
+
+{% if homepage_container_labels_traefik_middleware_basic_auth_enabled %}
+{% set middlewares = middlewares + [homepage_identifier + '-basic-auth'] %}
+traefik.http.middlewares.{{ homepage_identifier }}-basic-auth.basicauth.users={{ homepage_container_labels_traefik_middleware_basic_auth_users }}
+{% endif %}
+
+{% if homepage_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.{{ homepage_identifier }}-slashless-redirect.redirectregex.regex=^({{ homepage_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.{{ homepage_identifier }}-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + [homepage_identifier + '-slashless-redirect'] %}
+{% endif %}
+
+{% if homepage_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.{{ homepage_identifier }}-strip-prefix.stripprefix.prefixes={{ homepage_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + [homepage_identifier + '-strip-prefix'] %}
+{% endif %}
+
+{% if homepage_container_labels_traefik_additional_request_headers.keys() | length > 0 %}
+{% for name, value in homepage_container_labels_traefik_additional_request_headers.items() %}
+traefik.http.middlewares.{{ homepage_identifier }}-add-request-headers.headers.customrequestheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + [homepage_identifier + '-add-request-headers'] %}
+{% endif %}
+
+{% if homepage_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in homepage_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.{{ homepage_identifier }}-add-response-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + [homepage_identifier + '-add-response-headers'] %}
+{% endif %}
+
+traefik.http.routers.{{ homepage_identifier }}.rule={{ homepage_container_labels_traefik_rule }}
+{% if homepage_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.{{ homepage_identifier }}.priority={{ homepage_container_labels_traefik_priority }}
+{% endif %}
+traefik.http.routers.{{ homepage_identifier }}.service={{ homepage_identifier }}
+{% if middlewares | length > 0 %}
+traefik.http.routers.{{ homepage_identifier }}.middlewares={{ middlewares | join(',') }}
+{% endif %}
+traefik.http.routers.{{ homepage_identifier }}.entrypoints={{ homepage_container_labels_traefik_entrypoints }}
+traefik.http.routers.{{ homepage_identifier }}.tls={{ homepage_container_labels_traefik_tls | to_json }}
+{% if homepage_container_labels_traefik_tls %}
+traefik.http.routers.{{ homepage_identifier }}.tls.certResolver={{ homepage_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+traefik.http.services.{{ homepage_identifier }}.loadbalancer.server.port={{ homepage_container_http_port }}
+{% endif %}
+
+{% for arg in homepage_container_labels_additional_labels %}
+{{ arg }}
+{% endfor %}

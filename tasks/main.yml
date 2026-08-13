@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Perform homepage installation tasks
+  when: homepage_enabled | bool
+  tags:
+    - setup-all
+    - setup-homepage
+    - install-all
+    - install-homepage
+  block:
+    - name: Validate homepage configuration
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+    - name: Install homepage
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- name: Perform homepage uninstallation tasks
+  when: not homepage_enabled | bool
+  tags:
+    - setup-all
+    - setup-homepage
+  block:
+    - name: Uninstall homepage
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

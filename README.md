@@ -1,38 +1,29 @@
-Role Name
-=========
+<!--
+SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 
-A brief description of the role goes here.
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
 
-Requirements
-------------
+# Homepage Ansible role
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+This is an [Ansible](https://www.ansible.com/) role which installs [Homepage](https://gethomepage.dev) to run as a [Docker](https://www.docker.com/) container wrapped in a systemd service.
 
-Role Variables
---------------
+This role *implicitly* depends on:
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+- [`com.devture.ansible.role.playbook_help`](https://github.com/devture/com.devture.ansible.role.playbook_help)
+- [`com.devture.ansible.role.systemd_docker_base`](https://github.com/devture/com.devture.ansible.role.systemd_docker_base)
 
-Dependencies
-------------
+Check [`defaults/main.yml`](defaults/main.yml) for the full list of supported options. Refer to [this page](docs/configuring-Homepage.md) for details about setting up the service with this role.
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+💡 For an Ansible playbook which integrates this role and makes it easier to use, see the [Mother-of-All-Self-Hosting Ansible playbook](https://github.com/mother-of-all-self-hosting/mash-playbook).
 
-Example Playbook
-----------------
+## Development
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+You can optionally install a Git pre-commit hook (via [mise](https://mise.jdx.dev/) + [prek](https://prek.j178.dev/)) that runs formatting and linting checks before each commit. See [`.pre-commit-config.yaml`](./.pre-commit-config.yaml) for which hooks are to be executed.
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+To install the hook, run the [`just`](https://github.com/casey/just) command below:
 
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+```sh
+just prek-install-git-pre-commit-hook
+```

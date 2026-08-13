@@ -22,6 +22,11 @@ homepage_version: v1.74.0
 homepage_uid: ""
 homepage_gid: ""
 
+homepage_docker_endpoint: unix:///var/run/docker.sock
+homepage_docker_endpoint_is_unix_socket: "{{ homepage_docker_endpoint.startswith('unix://') }}"
+homepage_environment_variables_allowed_hosts: "{{ homepage_hostname }}"
+homepage_environment_variables_additional_variables: ""
+
 # The scheme used for serving homepage.
 homepage_scheme: https
 

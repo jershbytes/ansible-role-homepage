@@ -7,12 +7,12 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 #}
 
 [Unit]
-Description=Homarr ({{ homarr_identifier }})
-{% for service in homarr_systemd_required_services_list %}
+Description=Homepage ({{ homepage_identifier }})
+{% for service in homepage_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
-{% for service in homarr_systemd_wanted_services_list %}
+{% for service in homepage_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
 DefaultDependencies=no
@@ -20,11 +20,10 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre={{ devture_systemd_docker_base_host_command_sh }} -c '{{ homarr_container_cleanup_command | trim | replace("\n", " ") }}'
+ExecStartPre={{ devture_systemd_docker_base_host_command_sh }} -c '{{ homepage_container_cleanup_command | trim | replace("\n", " ") }}'
 
 {#
-  PUID and PGID are specified on env.j2 to run the container as homarr_uid:homarr_gid
-  See: https://homarr.dev/docs/1.10.0/advanced/running-as-different-user/
+  Homepage runs as root by default so it can access the Docker socket.
 #}
 {#
 If a UNIX socket is used, we need to keep capabilities, because:
@@ -37,9 +36,9 @@ If a non-UNIX-socket endpoint is used, we can drop capabilities, because:
 #}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       --rm \
-      --name={{ homarr_identifier }} \
+      --name={{ homepage_identifier }} \
       --log-driver=none \
-      {% if not homarr_docker_endpoint_is_unix_socket %}
+      {% if not homepage_docker_endpoint_is_unix_socket %}
       --cap-drop=ALL \
       --cap-add=CAP_DAC_OVERRIDE \
       --cap-add=CHOWN \
@@ -47,39 +46,36 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       --cap-add=SETGID \
       --cap-add=SETUID \
       {% endif %}
-      --network={{ homarr_container_network }} \
-      {% if homarr_container_http_host_bind_port %}
-      -p {{ homarr_container_http_host_bind_port }}:{{ homarr_container_http_port }} \
+      --network={{ homepage_container_network }} \
+      {% if homepage_container_http_host_bind_port %}
+      -p {{ homepage_container_http_host_bind_port }}:{{ homepage_container_http_port }} \
       {% endif %}
-      --env-file={{ homarr_base_path }}/env \
-      --label-file={{ homarr_base_path }}/labels \
-      --mount type=bind,src={{ homarr_data_path }},dst=/appdata/ \
-      {% if homarr_docker_endpoint_is_unix_socket %}
-      --mount type=bind,src={{ homarr_docker_endpoint | replace('unix://', '') }},dst=/var/run/docker.sock,ro \
+      --env-file={{ homepage_base_path }}/env \
+      --label-file={{ homepage_base_path }}/labels \
+      --mount type=bind,src={{ homepage_data_path }},dst=/app/config \
+      {% if homepage_docker_endpoint_is_unix_socket %}
+      --mount type=bind,src={{ homepage_docker_endpoint | replace('unix://', '') }},dst=/var/run/docker.sock,ro \
       {% endif %}
-      {% if homarr_database_type == 'postgres' and homarr_database_postgres_socket_enabled and homarr_database_postgres_socket_path_host != '' %}
-      --mount type=bind,src={{ homarr_database_postgres_socket_path_host }},dst={{ homarr_database_postgres_socket_path_container }} \
-      {% endif %}
-      {% for volume in homarr_container_additional_volumes %}
+      {% for volume in homepage_container_additional_volumes %}
       --mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options | default('') else '' }} \
       {% endfor %}
-      {% for arg in homarr_container_extra_arguments %}
+      {% for arg in homepage_container_extra_arguments %}
       {{ arg }} \
       {% endfor %}
-      {{ homarr_container_image_self_build_name if homarr_container_image_self_build else homarr_container_image }}
+      {{ homepage_container_image_self_build_name if homepage_container_image_self_build else homepage_container_image }}
 
-{% for network in homarr_container_additional_networks %}
-ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ homarr_identifier }}
+{% for network in homepage_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ homepage_identifier }}
 {% endfor %}
 
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ homarr_identifier }}
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ homepage_identifier }}
 
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ homarr_identifier }} 2>/dev/null || true'
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ homarr_identifier }} 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ homepage_container_stop_grace_time_seconds }} {{ homepage_identifier }} 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ homepage_identifier }} 2>/dev/null || true'
 
 Restart=always
 RestartSec=30
-SyslogIdentifier={{ homarr_identifier }}
+SyslogIdentifier={{ homepage_identifier }}
 
 [Install]
 WantedBy=multi-user.target

@@ -28,12 +28,7 @@ See the project's [documentation](https://homepage.dev/docs/getting-started) to 
 
 ## Prerequisites
 
-To run a homepage instance it is necessary to prepare a database. You can use a [MySQL](https://www.mysql.com/), [Postgres](https://www.postgresql.org/), or [SQLite](https://www.sqlite.org/). By default it is configured to use SQLite.
-
-If you are looking for an Ansible role for Postgres, you can check out [ansible-role-postgres](https://github.com/mother-of-all-self-hosting/ansible-role-postgres) maintained by the [Mother-of-All-Self-Hosting (MASH)](https://github.com/mother-of-all-self-hosting) team.
-
->[!NOTE]
-> Currently (as of v1.17.0) MariaDB is not supported but planned. See [this issue at GitHub](https://github.com/homepage-labs/homepage/issues/2305) for the latest information.
+Homepage stores its YAML configuration in `homepage_data_path`; it does not require a database.
 
 ## Adjusting the playbook configuration
 
@@ -68,57 +63,6 @@ homepage_hostname: "example.com"
 After adjusting the hostname, make sure to adjust your DNS records to point the domain to your server.
 
 **Note**: hosting homepage under a subpath (by configuring the `homepage_path_prefix` variable) does not seem to be possible due to homepage's technical limitations.
-
-### Set 32-byte hex digits for secret key
-
-You also need to specify **32-byte hex digits** to encrypt integration secrets on the database. To do so, add the following configuration to your `vars.yml` file. The value can be generated with `openssl rand -hex 32` or in another way.
-
-```yaml
-homepage_environment_variables_secret_encryption_key: YOUR_SECRET_KEY_HERE
-```
-
->[!NOTE]
-> Other type of values such as one generated with `pwgen -s 64 1` does not work.
-
-### Configuring database
-
-#### Specify database (optional)
-
-You can specify a database used by homepage. By default it is configured to use SQLite, and the SQLite database is stored in the directory specified with `homepage_data_path`.
-
-To use Postgres, add the following configuration to your `vars.yml` file:
-
-```yaml
-homepage_database_type: postgres
-```
-
-Set `mysql2` to use a MySQL compatible database via [MySQL2](https://sidorares.github.io/node-mysql2/docs), a MySQL client for Node.js.
-
-For other settings, check variables such as `homepage_database_postgres_*` and `homepage_database_mysql_*` on [`defaults/main.yml`](../defaults/main.yml).
-
-#### Configuring connection to the database server (optional)
-
->[!NOTE]
-> The connection to the MySQL compatible database (MySQL2) via the Unix socket is not yet available.
-
-By default the role is configured to establish connection with the Postgres server via the Unix socket. You can mount the Unix socket by adding the following configuration to your `vars.yml` file:
-
-```yaml
-# Specify the path to the Postgres Unix socket path on the host (bind-mount source)
-homepage_database_postgres_socket_path_host: ""
-```
-
-Setting it enables to connect to the Postgres server via Unix socket mounted in the container at `/run-postgres/.s.PGSQL.5432`.
-
-If TCP connection is preferred, connection via the Unix socket can be disabled by adding the following configuration to your `vars.yml` file:
-
-```yaml
-# Disable the connection to Postgres server via a Unix socket
-homepage_database_postgres_socket_enabled: false
-
-homepage_database_postgres_hostname: YOUR_POSTGRES_SERVER_HOSTNAME_HERE
-homepage_database_postgres_port: 5432
-```
 
 ### Extending the configuration
 

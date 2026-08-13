@@ -32,25 +32,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7.0.0
         with:
-          path: homarr
+          path: homepage
 
       - name: Set up Python
         uses: actions/setup-python@v6.3.0
         with:
-          python-version-file: homarr/.python-version
+          python-version-file: homepage/.python-version
           cache: pip
-          cache-dependency-path: homarr/molecule/requirements.txt
+          cache-dependency-path: homepage/molecule/requirements.txt
 
       - name: Install Python dependencies
-        working-directory: homarr
+        working-directory: homepage
         run: pip install -r molecule/requirements.txt
 
       - name: Cache Ansible collections
         uses: actions/cache@v6.1.0
         with:
           path: ~/.ansible/collections
-          key: ansible-collections-${{ hashFiles('homarr/molecule/default/requirements.yml') }}
+          key: ansible-collections-${{ hashFiles('homepage/molecule/default/requirements.yml') }}
 
       - name: Run Molecule
-        working-directory: homarr
+        working-directory: homepage
         run: molecule test --scenario-name ${{ matrix.scenario }}

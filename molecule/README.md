@@ -48,11 +48,11 @@ Currently these testing scenarios are available:
 
 ### `default`
 
-Tests a standard Homarr installation.
+Tests a standard Homepage installation.
 
 ### `default-selfbuild`
 
-Tests a standard Homarr installation with self-building the container image.
+Tests a standard Homepage installation with self-building the container image.
 
 ## Running
 

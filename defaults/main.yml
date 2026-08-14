@@ -17,7 +17,7 @@ homepage_base_path: "/{{ homepage_identifier }}"
 homepage_data_path: "{{ homepage_base_path }}/data"
 
 # renovate: datasource=docker depName=ghcr.io/gethomepage/homepage
-homepage_version: v1.13.2
+homepage_version: v2.0.0
 
 homepage_uid: ""
 homepage_gid: ""

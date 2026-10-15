@@ -5,6 +5,11 @@ SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
+<p align="center">
+<img src=".github/assets/little-cedar-group.png" alt="Little Cedar Group" width="220" />
+</p>
+
+
 # Homepage Ansible role
 
 This is an [Ansible](https://www.ansible.com/) role which installs [Homepage](https://gethomepage.dev) to run as a [Docker](https://www.docker.com/) container wrapped in a systemd service.
